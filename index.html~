@@ -1,0 +1,129 @@
+<html>
+	<head>
+		<meta charset="utf-8" >
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<style>
+		.txt-video {
+		  white-space: nowrap;
+		  width: 100%;                   
+		  overflow: hidden;
+		  text-overflow: ellipsis;
+		}
+		.img-video {
+			cursor: pointer;
+		}
+		</style>
+	</head>
+
+	<body>
+		<div id="modal-video" class="modal fade" tabindex="-1" role="dialog">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title">Modal title</h4>
+		      </div>
+		      <div class="modal-body">
+		      	<iframe style="height: 400px; width: 500px" id="iframe-video"> </iframe>
+		      </div>
+		      <div class="modal-footer">
+		       
+		      </div>
+		    </div>	<!-- /.modal-content -->
+		  </div>	<!-- /.modal-dialog -->
+		</div>		<!-- /.modal -->
+
+		<div class="container">
+			<div class="jumbotron">
+			  <h1>Aprenda JSON com Redtube</h1>
+			  <p>Manda Nudes</p>
+
+			    <div class="input-group">
+			      <input id="txt-pesquisar" type="text" class="form-control" placeholder="Darlene dando...">
+			      <span class="input-group-btn">
+			        <button id="btn-pesquisar" class="btn btn-default" type="button">Pesquisar</button>
+			      </span>
+			    </div><!-- /input-group -->
+			</div>
+
+			<div id="div-loading" style="display : none;">
+				<div class="progress">
+				  <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+				    <span class="sr-only">45% Complete</span>
+				  </div>
+				</div>
+			</div>
+
+			<div id="conteudo">
+
+			</div> <!-- /.conteudo -->
+		</div>
+		
+		<!-- jQuery JSON -->
+		<script id="tmpl-video" type="text/html">
+			<div data-titulo="${video.title}" data-url="${video.embed_url}" class="col-sm-6 col-md-3 video">
+				<div class="thumbnail">
+				    <img style="width: 100%" class="img-video" src="${video.thumb}" alt="...">
+				    <div class="caption">
+					    <h3>Tempo: ${video.duration}</h3>
+				    	<p class="txt-video">${video.title} </p>
+				    </div>
+				</div>
+			</div>					  
+		</script>
+
+		<script src="http://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+
+		<script src="https://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js" type="text/javascript"></script>
+
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+		<script>
+		$("#btn-pesquisar").click(function () 
+			{
+				//pegando o valor do input e jogando na variavel termo
+				var termo = $("#txt-pesquisar").val();
+				var proxy = "";
+				proxy = "https://crossorigin.me/"
+				var url = proxy + "http://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&search=" + termo;
+				$.ajax(
+					{
+						url : url,
+						method: 'GET',
+						beforeSend : function () {
+							$("#div-loading").show();
+						},
+						success : function (retorno) {
+							if(retorno.count != 0)
+							{
+								$(".video").remove();
+						$("#tmpl-video").tmpl(retorno.videos).appendTo("#conteudo");
+							}
+							else
+							{
+								alert("Não foi encontrado nenhum video");
+							}
+						},
+						error : function () {
+							alert("falha de conexão");
+						},
+						complete: function () {
+							$("#div-loading").hide();
+						}
+					});
+			});
+		$("#conteudo").on('click', '.img-video', function () {
+			//jogando o elemento em uma variavel (Fica mais fácil)
+			var elemento = $(this);
+			var url = elemento.closest(".video").data("url");
+			var titulo = elemento.closest(".video").data("titulo");
+			$(".modal-title").html(titulo);
+			$("#iframe-video").attr("src", url);
+		//Pra usar o comando modal, precisamos importar o bootstrap.js
+		$("#modal-video").modal();
+		})
+	</script>
+</body>
+</html>

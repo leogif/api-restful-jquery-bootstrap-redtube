@@ -1,0 +1,10 @@
+.txt-video {
+	white-space: nowrap;
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;	
+}
+
+.img-video {
+	cursor: pointer;
+}
